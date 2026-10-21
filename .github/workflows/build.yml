@@ -28,21 +28,21 @@ jobs:
       - name: Install Android SDK 35
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Set up Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
       - name: Check project files
         run: |
+          echo "Checking FocusLock project..."
           ls -la
           test -f settings.gradle || test -f settings.gradle.kts
+          test -f build.gradle || test -f build.gradle.kts
           test -f app/build.gradle || test -f app/build.gradle.kts
 
       - name: Build debug APK
-        run: |
-          if [ -f ./gradlew ]; then
-            chmod +x ./gradlew
-            ./gradlew --no-daemon :app:assembleDebug
-          else
-            echo "ERROR: Gradle wrapper gradlew is missing."
-            exit 1
-          fi
+        run: gradle --no-daemon :app:assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
